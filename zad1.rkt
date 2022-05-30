@@ -4,11 +4,11 @@
   (print-only-errors #t))
 
 (define (mnoz a)
-  (cond[(empty? a) 0]
+  (cond[(empty? a) 1]
        [(empty? (rest a) )  (first a)]
        [else (* (first a)  (mnoz (rest a)))])
   )
-(define (+ a)
+(define (dod a)
   (cond[(empty? a) 0]
        [(empty? (rest a) )  (first a)]
        [else (+ (first a)  (+ (rest a)))])
@@ -35,7 +35,9 @@
 
 (define-type Exp
   (numE [n : Number])
-  (opE [op : Op] [l : Exp] [r : Exp]))
+  ;(opE [op : Op] [l : Exp] [r : Exp])
+  (opE [op : Op] [Listof : Exp]))
+
 
 ;; parse ----------------------------------------
 
@@ -43,7 +45,7 @@
   (cond
     [(s-exp-match? `NUMBER s)
      (numE (s-exp->number s))]
-    [(s-exp-match? `{SYMBOL ANY ANY} s)
+    [(s-exp-match? `{SYMBOL ANY ...} s)
      (opE (parse-op (s-exp->symbol (first (s-exp->list s))))
           (parse (second (s-exp->list s)))
           (parse (third (s-exp->list s))))]
@@ -79,12 +81,12 @@
 
 (define-type-alias Value Number)
 
-(define (op->proc [op : Op]) : (Value Value -> Value)
+(define (op->proc [op : Op]) : (ListOf Expression -> Value)
   (type-case Op op
     [(add) dod]
-    [(sub) -]
-    [(mul) *]
-    [(div) /]))
+    [(sub) odej]
+    [(mul) mnoz]
+    [(div) dziel]))
 
 (define (eval [e : Exp]) : Value
   (type-case Exp e
